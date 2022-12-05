@@ -23,7 +23,6 @@ class Assignment:
     def has_overlap(self):
         return self.section1.overlaps(self.section2)
 
-
 assert Section(2,8).fully_contains(Section(3,7))
 assert Section(4,6).fully_contains(Section(6,6))
 assert Assignment("2-4,6-8").section1.low == 2
@@ -45,7 +44,6 @@ def count_fully_contains(filename):
             if Assignment(line).has_fully_contains():
                 count += 1
     return count
-
 
 def count_overlaps(filename):
     count = 0
