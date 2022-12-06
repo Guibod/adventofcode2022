@@ -22,15 +22,22 @@ assert buffers[0] == ["a", "b", "c", "d"]
 assert buffers[1] == ["b", "c", "d", "e"]
 assert buffers[8] == ["i", "j", "k", "l"]
 
-assert DataStreamBuffer("mjqjpqmgbljsphdztnvjfqwrcgsmlb").first_marker_after() == 7
-assert DataStreamBuffer("bvwbjplbgvbhsrlpgdmjqwftvncz").first_marker_after() == 5
-assert DataStreamBuffer("nppdvjthqldpwncqszvftbrmjlhg").first_marker_after() == 6
-assert DataStreamBuffer("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg").first_marker_after() == 10
-assert DataStreamBuffer("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw").first_marker_after() == 11
+assert DataStreamBuffer("mjqjpqmgbljsphdztnvjfqwrcgsmlb").first_marker_after(4) == 7
+assert DataStreamBuffer("mjqjpqmgbljsphdztnvjfqwrcgsmlb").first_marker_after(14) == 19
+assert DataStreamBuffer("bvwbjplbgvbhsrlpgdmjqwftvncz").first_marker_after(4) == 5
+assert DataStreamBuffer("bvwbjplbgvbhsrlpgdmjqwftvncz").first_marker_after(14) == 23
+assert DataStreamBuffer("nppdvjthqldpwncqszvftbrmjlhg").first_marker_after(4) == 6
+assert DataStreamBuffer("nppdvjthqldpwncqszvftbrmjlhg").first_marker_after(14) == 23
+assert DataStreamBuffer("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg").first_marker_after(4) == 10
+assert DataStreamBuffer("nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg").first_marker_after(14) == 29
+assert DataStreamBuffer("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw").first_marker_after(4) == 11
+assert DataStreamBuffer("zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw").first_marker_after(14) == 26
 
 with open("input.txt", encoding="utf-8") as file:
     buffer = file.readline()
 ds = DataStreamBuffer(buffer)
 
-print(f"Datastream buffer needed {ds.first_marker_after()} characters to be "
-      f"processed before the first start-of-packet marker was detected")
+print(f"Datastream buffer needed {ds.first_marker_after(4)} characters to be "
+      f"processed before the first start-of-packet marker was detected (4 chars buffer)")
+print(f"Datastream buffer needed {ds.first_marker_after(14)} characters to be "
+      f"processed before the first start-of-packet marker was detected (14 chars buffer)")
