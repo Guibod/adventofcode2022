@@ -34,7 +34,7 @@ class Stack(list):
     pass
 
 
-class Cargo:
+class CrateMover9000:
     pattern = re.compile(r'(?P<crate>\[(?P<content>\w)])')
 
     def __init__(self):
@@ -66,66 +66,130 @@ class Cargo:
         return out
 
 
-def parse_file(filename):
-    cargo = Cargo()
+class CrateMover9001(CrateMover9000):
+    def apply(self, p: Procedure):
+        section = self.stacks[p.source][-p.quantity:]
+        del self.stacks[p.source][-p.quantity:]
+        self.stacks[p.target].extend(section)
+
+
+def parse_file(cratemover, filename):
     procedure = []
     with open(filename, encoding="utf-8") as file:
         for line in file:
             try:
                 try:
-                    cargo.parse_line(line)
+                    cratemover.parse_line(line)
                 except ValueError:
                     procedure.append(Procedure.parse(line))
             except ValueError:
                 pass
 
-    return cargo, procedure
+    return procedure
 
 
-cargo, procedure = parse_file("test.txt")
+test_mover_9000 = CrateMover9000()
+procedure = parse_file(test_mover_9000, "test.txt")
 assert len(procedure) == 4
 assert procedure[0].source == 1
 assert procedure[0].target == 0
 assert procedure[0].quantity == 1
 
-assert len(cargo.stacks) == 3
-assert len(cargo.stacks[0]) == 2
-assert cargo.stacks[0][1] == "N"
-assert cargo.stacks[0][0] == "Z"
-assert len(cargo.stacks[1]) == 3
-assert cargo.stacks[1][2] == "D"
-assert cargo.stacks[1][1] == "C"
-assert cargo.stacks[1][0] == "M"
-assert len(cargo.stacks[2]) == 1
-assert cargo.stacks[2][0] == "P"
+assert len(test_mover_9000.stacks) == 3
+assert len(test_mover_9000.stacks[0]) == 2
+assert test_mover_9000.stacks[0][1] == "N"
+assert test_mover_9000.stacks[0][0] == "Z"
+assert len(test_mover_9000.stacks[1]) == 3
+assert test_mover_9000.stacks[1][2] == "D"
+assert test_mover_9000.stacks[1][1] == "C"
+assert test_mover_9000.stacks[1][0] == "M"
+assert len(test_mover_9000.stacks[2]) == 1
+assert test_mover_9000.stacks[2][0] == "P"
 
-cargo.apply(procedure[0])
-assert len(cargo.stacks[0]) == 3
-assert cargo.stacks[0][2] == "D"
-assert cargo.stacks[0][1] == "N"
-assert cargo.stacks[0][0] == "Z"
-assert len(cargo.stacks[1]) == 2
-assert cargo.stacks[1][1] == "C"
-assert cargo.stacks[1][0] == "M"
-assert len(cargo.stacks[2]) == 1
-assert cargo.stacks[2][0] == "P"
+test_mover_9000.apply(procedure[0])
+assert len(test_mover_9000.stacks[0]) == 3
+assert test_mover_9000.stacks[0][2] == "D"
+assert test_mover_9000.stacks[0][1] == "N"
+assert test_mover_9000.stacks[0][0] == "Z"
+assert len(test_mover_9000.stacks[1]) == 2
+assert test_mover_9000.stacks[1][1] == "C"
+assert test_mover_9000.stacks[1][0] == "M"
+assert len(test_mover_9000.stacks[2]) == 1
+assert test_mover_9000.stacks[2][0] == "P"
 
-cargo.apply(procedure[1])
-assert len(cargo.stacks[0]) == 0
-assert len(cargo.stacks[1]) == 2
-assert cargo.stacks[1][1] == "C"
-assert cargo.stacks[1][0] == "M"
-assert len(cargo.stacks[2]) == 4
-assert cargo.stacks[2][3] == "Z"
-assert cargo.stacks[2][2] == "N"
-assert cargo.stacks[2][1] == "D"
-assert cargo.stacks[2][0] == "P"
+test_mover_9000.apply(procedure[1])
+assert len(test_mover_9000.stacks[0]) == 0
+assert len(test_mover_9000.stacks[1]) == 2
+assert test_mover_9000.stacks[1][1] == "C"
+assert test_mover_9000.stacks[1][0] == "M"
+assert len(test_mover_9000.stacks[2]) == 4
+assert test_mover_9000.stacks[2][3] == "Z"
+assert test_mover_9000.stacks[2][2] == "N"
+assert test_mover_9000.stacks[2][1] == "D"
+assert test_mover_9000.stacks[2][0] == "P"
 
-cargo.apply(procedure[2])
-cargo.apply(procedure[3])
-assert cargo.top() == "CMZ"
+test_mover_9000.apply(procedure[2])
+test_mover_9000.apply(procedure[3])
+assert test_mover_9000.top() == "CMZ"
 
-cargo, procedure = parse_file("input.txt")
+
+test_mover_9001 = CrateMover9001()
+procedure = parse_file(test_mover_9001, "test.txt")
+
+test_mover_9001.apply(procedure[0])
+assert len(test_mover_9001.stacks[0]) == 3
+assert test_mover_9001.stacks[0][2] == "D"
+assert test_mover_9001.stacks[0][1] == "N"
+assert test_mover_9001.stacks[0][0] == "Z"
+assert len(test_mover_9001.stacks[1]) == 2
+assert test_mover_9001.stacks[1][1] == "C"
+assert test_mover_9001.stacks[1][0] == "M"
+assert len(test_mover_9001.stacks[2]) == 1
+assert test_mover_9001.stacks[2][0] == "P"
+
+test_mover_9001.apply(procedure[1])
+assert len(test_mover_9001.stacks[0]) == 0
+assert len(test_mover_9001.stacks[1]) == 2
+assert test_mover_9001.stacks[1][1] == "C"
+assert test_mover_9001.stacks[1][0] == "M"
+assert len(test_mover_9001.stacks[2]) == 4
+assert test_mover_9001.stacks[2][3] == "D"
+assert test_mover_9001.stacks[2][2] == "N"
+assert test_mover_9001.stacks[2][1] == "Z"
+assert test_mover_9001.stacks[2][0] == "P"
+
+test_mover_9001.apply(procedure[2])
+assert len(test_mover_9001.stacks[0]) == 2
+assert test_mover_9001.stacks[0][1] == "C"
+assert test_mover_9001.stacks[0][0] == "M"
+assert len(test_mover_9001.stacks[1]) == 0
+assert len(test_mover_9001.stacks[2]) == 4
+assert test_mover_9001.stacks[2][3] == "D"
+assert test_mover_9001.stacks[2][2] == "N"
+assert test_mover_9001.stacks[2][1] == "Z"
+assert test_mover_9001.stacks[2][0] == "P"
+
+test_mover_9001.apply(procedure[3])
+assert len(test_mover_9001.stacks[0]) == 1
+assert test_mover_9001.stacks[0][0] == "M"
+assert len(test_mover_9001.stacks[1]) == 1
+assert test_mover_9001.stacks[1][0] == "C"
+assert len(test_mover_9001.stacks[2]) == 4
+assert test_mover_9001.stacks[2][3] == "D"
+assert test_mover_9001.stacks[2][2] == "N"
+assert test_mover_9001.stacks[2][1] == "Z"
+assert test_mover_9001.stacks[2][0] == "P"
+
+assert test_mover_9001.top() == "MCD"
+
+crate_mover_9000 = CrateMover9000()
+procedure = parse_file(crate_mover_9000, "input.txt")
 for p in procedure:
-    cargo.apply(p)
-print(f"Top most crates after procedure are encoded as : {cargo.top()}")
+    crate_mover_9000.apply(p)
+print(f"Top most crates for a CrateMover 9000 after procedure are encoded as : {crate_mover_9000.top()}")
+
+crate_mover_9001 = CrateMover9001()
+procedure = parse_file(crate_mover_9001, "input.txt")
+for p in procedure:
+    crate_mover_9001.apply(p)
+print(f"Top most crates for a CrateMover 9001 after procedure are encoded as : {crate_mover_9001.top()}")
