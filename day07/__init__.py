@@ -1,5 +1,3 @@
-import re
-from typing import List
 
 class Node:
     def __init__(self, name):
@@ -46,12 +44,13 @@ class Directory(Node):
     def size(self):
         return sum(node.size for node in self.children)
 
+
 class File(Node):
     def __init__(self, name, size):
         super().__init__(name)
         self.size = size
 
-file_result = re.compile(r"((?P<size>\d+)|dir) (?P<name>\w+)")
+
 def parser(filename):
     root = Directory("")
     current = root
@@ -76,6 +75,7 @@ def parser(filename):
                 else:
                     current.add(File(name, int(size_or_dir)))
     return root
+
 
 test_root = parser("test.txt")
 assert len(test_root) == 4
