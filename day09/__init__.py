@@ -1,5 +1,5 @@
-import math
 from enum import Enum
+from typing import Tuple, List
 
 
 class Position:
@@ -7,10 +7,10 @@ class Position:
         self.x = x
         self.y = y
 
-    def distance(self, other: 'Position'):
+    def distance(self, other: 'Position') -> int:
         return max(abs(other.x - self.x), abs(other.y - self.y))
 
-    def follow(self, other: 'Position'):
+    def follow(self, other: 'Position') -> 'Position':
         x2 = self.x
         y2 = self.y
         if self.distance(other) > 1:
@@ -24,7 +24,7 @@ class Position:
         return Position(x2, y2)
 
     @property
-    def coords(self):
+    def coords(self) -> Tuple[int, int]:
         return self.x, self.y
 
     def __eq__(self, other):
@@ -96,22 +96,28 @@ class Rope(list):
             self.append(knot)
             
     @property
-    def head(self):
+    def head(self) -> Knot:
         return self[0]
     
     @property
-    def tail(self):
+    def tail(self) -> Knot:
         return self[-1]
 
+    def _apply(self, instructions: List[Tuple[Direction, int]]):
+        for direction, distance in instructions:
+            self.head.apply_order(direction, distance)
 
+    def apply(self, filename):
+        self._apply(self.parse(filename))
 
-def parse(filename):
-    instructions = []
-    with open(filename, encoding="utf-8") as file:
-        for line in file.readlines():
-            direction, distance = line.split(" ", maxsplit=2)
-            instructions.append((direction, int(distance)))
-    return instructions
+    @classmethod
+    def parse(cls, filename):
+        instructions = []
+        with open(filename, encoding="utf-8") as file:
+            for line in file.readlines():
+                direction, distance = line.split(" ", maxsplit=2)
+                instructions.append((direction, int(distance)))
+        return instructions
 
 
 assert Position(0, 0).distance(Position(1, 1)) == 1
@@ -132,7 +138,7 @@ assert Position(0, 0).follow(Position(1, 2)) == (1, 1)
 assert Position(0, 0).follow(Position(-1, -2)) == (-1, -1)
 
 test_rope = Rope(2)
-test_instructions = parse("test.txt")
+test_instructions = Rope.parse("test.txt")
 
 test_rope.head.apply_order(*test_instructions[0])
 assert test_rope.head.pos == (4, 0)
@@ -169,9 +175,17 @@ assert test_rope.tail.pos == (1, 2)
 assert len(set(test_rope.tail.history)) == 13
 
 rope = Rope(2)
-instructions = parse("input.txt")
-for i in instructions:
-    rope.head.apply_order(*i)
+rope.apply("input.txt")
 
 visited = len(set(rope.tail.history))
-print(f"Tail visited {visited} distinct positions")
+print(f"A rope of 2, the tail visited {visited} distinct positions")
+
+test_rope_2 = Rope(10)
+test_rope_2.apply("test.larger.txt")
+visited = len(set(test_rope_2.tail.history))
+assert visited == 36
+
+rope2 = Rope(10)
+rope2.apply("input.txt")
+visited = len(set(rope2.tail.history))
+print(f"A rope of 10, the tail visited {visited} distinct positions")
