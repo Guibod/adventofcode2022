@@ -11,17 +11,17 @@ class Position:
         return max(abs(other.x - self.x), abs(other.y - self.y))
 
     def follow(self, other: 'Position') -> 'Position':
-        x2 = self.x
-        y2 = self.y
+        x_new = self.x
+        y_new = self.y
         if self.distance(other) > 1:
-            xd = other.x - self.x
-            if xd:
-                x2 += int(xd / abs(xd))
-            yd = other.y - self.y
-            if yd:
-                y2 += int(yd / abs(yd))
+            x_delta = other.x - self.x
+            if x_delta:
+                x_new += int(x_delta / abs(x_delta))
+            y_delta = other.y - self.y
+            if y_delta:
+                y_new += int(y_delta / abs(y_delta))
 
-        return Position(x2, y2)
+        return Position(x_new, y_new)
 
     @property
     def coords(self) -> Tuple[int, int]:
@@ -52,10 +52,10 @@ class Knot:
         self.name = name
         self.pos = pos or Position(0, 0)
         self.history = [self.pos.coords]
-        self.next = None
+        self.attached = None
 
-    def attach(self, next: 'Knot'):
-        self.next = next
+    def attach(self, knot: 'Knot'):
+        self.attached = knot
 
     def __repr__(self):
         return f"{self.name} {self.pos}"
@@ -64,20 +64,20 @@ class Knot:
         self.pos = position
         self.history.append(position.coords)
 
-        if self.next:
-            next_pos = self.next.pos
-            self.next.move(next_pos.follow(self.pos))
+        if self.attached:
+            next_pos = self.attached.pos
+            self.attached.move(next_pos.follow(self.pos))
 
-    def apply_order(self, d: Direction, distance: int):
+    def apply_order(self, direction: Direction, distance: int):
         for _ in range(distance):
             pos = self.pos
-            if d == Direction.UP.value:
+            if direction == Direction.UP.value:
                 pos.y += 1
-            elif d == Direction.DOWN.value:
+            elif direction == Direction.DOWN.value:
                 pos.y -= 1
-            elif d == Direction.RIGHT.value:
+            elif direction == Direction.RIGHT.value:
                 pos.x += 1
-            elif d == Direction.LEFT.value:
+            elif direction == Direction.LEFT.value:
                 pos.x -= 1
             self.move(pos)
 
@@ -90,15 +90,15 @@ class Rope(list):
         if length <= 1:
             raise ValueError("Rope must at least be of length 1")
 
-        for i, name in enumerate(range(length-1), start=1):
+        for i in enumerate(range(length - 1), start=1):
             knot = Knot(str(i))
             self[-1].attach(knot)
             self.append(knot)
-            
+
     @property
     def head(self) -> Knot:
         return self[0]
-    
+
     @property
     def tail(self) -> Knot:
         return self[-1]
