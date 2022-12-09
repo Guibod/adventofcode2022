@@ -117,10 +117,10 @@ class Grid:
                     grid.add((x, y), int(char))
         return grid
 
-    def print(self, mode="size"):
+    def print(self):
         for row in self.grid:
             for tree in row:
-                tree.print(mode)
+                tree.print()
             print("")
 
 
