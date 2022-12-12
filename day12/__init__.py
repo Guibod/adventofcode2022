@@ -197,3 +197,4 @@ path3 = set(climber2.solve())
 map.print(path3)
 print(f"{climber2} moved {len(set(path3))-1} squares, to reach {map.top}")
 
+assert len(path2) == 420
